@@ -1,1 +1,16 @@
 data
+
+# Ignore virtual environment folder
+.venv
+
+# Ignore Virtual Studio Code settings
+.vscode
+
+# Ignore linter settings
+.pylintrc
+
+# Ignore output of image processing
+output
+
+# Ignore pycache
+__pycache__
