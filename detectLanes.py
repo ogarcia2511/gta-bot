@@ -1,7 +1,5 @@
-import os
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 
 def remove_noise(image, kernel_size=3):
     """
@@ -160,12 +158,3 @@ def image_processing_pipeline(image):
     processed_img = draw_lines(lines_image, image)
 
     return processed_img
-
-if __name__ == "__main__":
-    init_image = cv2.imread('4.PNG')
-    processed_image = image_processing_pipeline(init_image)
-
-    processed_image = cv2.cvtColor(processed_image, cv2.COLOR_BGR2RGB)
-
-    plt.imshow(processed_image, cmap='gray')
-    plt.waitforbuttonpress()
