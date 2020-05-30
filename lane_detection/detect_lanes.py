@@ -53,13 +53,13 @@ def region_of_interest(image, vertices):
     masked_image = cv2.bitwise_and(image, mask)
     return masked_image
 
-# This would be some advance/later stuff that we would enjoy working on. 
+# This would be some advance/later stuff that we would enjoy working on.
 # Can be ignored for the scope of this project.
 def black_out_car(image):
     """
     Blacks out the player's car if it is a 3D view.
     :param image: Image from which the car needs to be removed.
-    :return: Image without the car. 
+    :return: Image without the car.
     """
     new_img = convert_color(image)
     vertices = np.array([[(650, 730), (750, 500), (1030, 495), (1056, 760)]])
@@ -124,9 +124,9 @@ def hough_lines(image, rho=1, theta=np.pi/180, threshold=100, min_line_len=100, 
                 try:
                     cv2.line(lines_image, (x_1, y_1), (x_2, y_2), (0, 0, 255), 30)
                 except OverflowError as ofe:
-                    pass # KILL ME LATER FOR THIS. IF YOU FIND A GOOD WORK AROUND LMK. 
+                    pass # KILL ME LATER FOR THIS. IF YOU FIND A GOOD WORK AROUND LMK.
 
-    return lines_image
+    return lines_image, lines
 
 def draw_lines(img_src_1, img_src_2, alpha=0.9, beta=1.0, gamma=0.0):
     """
@@ -154,7 +154,18 @@ def image_processing_pipeline(image):
     processed_img = remove_noise(processed_img, 5)
     processed_img = region_of_interest(processed_img, vertices)
 
-    lines_image = hough_lines(processed_img)
+    lines_image, lines = hough_lines(processed_img)
+    left_slope = 0
+    right_slope = 0
+    
+    try:
+        left_slope = (lines[0][3] - lines[0][1]) / (lines[0][2] - lines[0][0])
+        right_slope = (lines[1][3] - lines[1][1]) / (lines[1][2] - lines[1][0])
+    except Exception as identifier:
+        pass
+    
+    print("Left slope: ", left_slope)
+    print("Right slope: ", right_slope)
     processed_img = draw_lines(lines_image, image)
 
-    return processed_img
+    return processed_img, left_slope, right_slope
