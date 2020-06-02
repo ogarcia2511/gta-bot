@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from numpy.polynomial import Polynomial
+import warnings
 
 def remove_noise(image, kernel_size=3):
     """
@@ -81,9 +83,28 @@ def average_lines(image, lines):
     """
     right_lines, left_lines = [], []
     for x_1, y_1, x_2, y_2 in lines[:, 0]:
-        parameters = np.polyfit((x_1, x_2), (y_1, y_2), 1)
-        slope = parameters[0]
-        intercept = parameters[1]
+        
+        # def solve_equation(x_1, y_1, x_2, y_2):
+        #     m = (y_2 - y_1) / (x_2 - x_1)
+        #     b = (y_2 - (m * x_2))
+        #     return m, b
+
+        # NOTE: use of Polynomial class is preferred by NumPy
+        # parameters = np.polyfit((x_1, x_2), (y_1, y_2), 1)
+        # slope = parameters[0]
+        # intercept = parameters[1]
+
+        # parameters = Polynomial.fit((x_1, x_2), (y_1, y_2), 2)
+
+        # parameters = solve_equation(x_1, y_1, x_2, y_2)
+        # slope = parameters[0]
+        # intercept = parameters[1]
+
+        xs = (x_1, x_2)
+        ys = (y_1, y_2)
+        A = np.vstack([xs, np.ones(len(xs))]).T
+        slope, intercept = np.linalg.lstsq(A, ys)[0]
+
         if slope > 0:
             right_lines.append([slope, intercept])
         else:
@@ -103,7 +124,7 @@ def average_lines(image, lines):
 
     return left, right
 
-def hough_lines(image, rho=1, theta=np.pi/180, threshold=100, min_line_len=100, max_len_gap=50):
+def hough_lines(image, rho=1, theta=np.pi/180, threshold=100, min_line_len=15, max_len_gap=20):
     """
     Find lines in the RoI processed image using the probabilistic Hough transform algorithm.
     :param image: Source image in which lines need to be found.
@@ -144,28 +165,28 @@ def image_processing_pipeline(image):
     :return: Processed image with the highlighted lanes.
     """
     processed_img = convert_color(image)
-    processed_img = remove_noise(image, 5)
-    processed_img = detect_edges(processed_img, 93, 233)
+    processed_img = detect_edges(processed_img, 90, 270)    
+    processed_img = remove_noise(processed_img, 5)
 
-    pt1, pt2, pt3, pt4, pt5, pt6 = (10, 600), (10, 550), (250, 500), (750, 500), (1000, 550), (1000, 600)
-
+    # changed to better fit normal driving angle when no mouse input given
+    pt1, pt2, pt3, pt4, pt5, pt6 = (10, 500), (10, 300), (300, 200), (500, 200), (800, 300), (800, 500)
     vertices = np.array([[pt1, pt2, pt3, pt4, pt5, pt6]], dtype=np.int32)
 
-    processed_img = remove_noise(processed_img, 5)
+    # processed_img = remove_noise(processed_img, 5)
     processed_img = region_of_interest(processed_img, vertices)
 
     lines_image, lines = hough_lines(processed_img)
-    left_slope = 0
-    right_slope = 0
+    left_slope = 0.0
+    right_slope = 0.0
     
     try:
         left_slope = (lines[0][3] - lines[0][1]) / (lines[0][2] - lines[0][0])
         right_slope = (lines[1][3] - lines[1][1]) / (lines[1][2] - lines[1][0])
     except Exception as identifier:
         pass
-    
-    print("Left slope: ", left_slope)
-    print("Right slope: ", right_slope)
+
     processed_img = draw_lines(lines_image, image)
 
+
     return processed_img, left_slope, right_slope
+

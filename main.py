@@ -21,6 +21,8 @@ def left() -> None:
     :return: None
     """
     direct_input.PressKey(direct_input.A)
+    direct_input.PressKey(direct_input.W)
+    time.sleep(0.1)
     direct_input.ReleaseKey(direct_input.W)
     direct_input.ReleaseKey(direct_input.D)
     direct_input.ReleaseKey(direct_input.A)
@@ -31,6 +33,8 @@ def right() -> None:
     :return: None
     """
     direct_input.PressKey(direct_input.D)
+    direct_input.PressKey(direct_input.W)
+    time.sleep(0.1)
     direct_input.ReleaseKey(direct_input.A)
     direct_input.ReleaseKey(direct_input.W)
     direct_input.ReleaseKey(direct_input.D)
@@ -46,6 +50,12 @@ def slow_down() -> None:
 
 
 if __name__ == "__main__":
+    print("Beginning algorithm...")
+
+    for i in reversed([*range(6)]):
+        print(i)
+        time.sleep(1)
+
     END = time.time()
     while True:
         SCREEN = np.array(ImageGrab.grab(bbox=(0, 40, 800, 640)))
@@ -55,13 +65,27 @@ if __name__ == "__main__":
         cv2.imshow('processed', NEW_SCREEN)
 
         # Comment out the line below if want to see only lines drawn image
-        cv2.imshow('window', cv2.cvtColor(SCREEN, cv2.COLOR_BGR2RGB))
+        # cv2.imshow('window', cv2.cvtColor(SCREEN, cv2.COLOR_BGR2RGB))
 
-        if LEFT_SLOPE < 0 and RIGHT_SLOPE < 0:
+        print(LEFT_SLOPE, RIGHT_SLOPE)
+        # if LEFT_SLOPE < 0 and RIGHT_SLOPE < 0:
+        #     print("Command: RIGHT")
+        #     # right()
+        # elif LEFT_SLOPE > 0 and RIGHT_SLOPE > 0:
+        #     print("Command: LEFT")
+        #     # left()
+        # else:
+        #     print("Command: STRAIGHT")
+        #     # straight()
+
+        if abs(LEFT_SLOPE) > abs(RIGHT_SLOPE):
+            print("Command: RIGHT")
             right()
-        elif LEFT_SLOPE > 0 and RIGHT_SLOPE > 0:
+        elif abs(RIGHT_SLOPE) > abs(LEFT_SLOPE):
+            print("Command: LEFT")
             left()
         else:
+            print("Command: STRAIGHT")
             straight()
 
         if cv2.waitKey(25) & 0xFF == ord('q'):

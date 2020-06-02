@@ -3,7 +3,7 @@ data
 # Ignore virtual environment folder
 .venv
 
-# Ignore Virtual Studio Code settings
+# Ignore Visual Studio Code settings
 .vscode
 
 # Ignore linter settings
