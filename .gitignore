@@ -16,4 +16,10 @@ output
 __pycache__
 
 # Ignore training
-training/
+training
+
+# Ignore models
+models
+
+# Ignore logs
+logs

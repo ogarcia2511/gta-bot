@@ -1,3 +1,5 @@
 numpy==1.18.4
 opencv-python==4.2.0.34
 Pillow==7.1.2
+tensorflow==1.14.0
+pywin32
