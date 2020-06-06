@@ -14,3 +14,6 @@ output
 
 # Ignore pycache
 __pycache__
+
+# Ignore training
+training/
